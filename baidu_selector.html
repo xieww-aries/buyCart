@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>baidu_selector</title>
+    <style type="text/css">
+        * {
+            margin:0;
+            padding:0;
+        }
+        input {
+            width:500px;
+            height:50px;
+            margin-left:50px;
+        }
+        h1 {
+            margin:0;
+            padding:0;
+            float:left;
+            height:50px;
+            line-height:50px;
+            color:#00f;
+            width:100px;
+            background:pink;
+            border-radius:10px;
+            text-align:center;
+            box-shadow: -5px 5px #0f0;
+        }
+        #box {
+            margin:200px 0 0 300px;
+        }
+        ul {
+            width:500px;
+            margin-left:150px;
+            border:1px #000 solid;
+        }
+        li {
+            height:30px;
+            line-height:30px;
+            width:500px;
+        }
+        .active {
+            background:grey;
+        }
+    </style>
+    <script type="text/javascript" src="vue.js"></script>
+    <script type="text/javascript" src="vue-resource.js"></script>
+    <script type="text/javascript">
+        window.onload = function(){
+            var vm = new Vue({
+                el : '#box',
+                data : {
+                    ipt : '',
+                    arr : [],
+                    now : -1
+                },
+                methods : {
+                    get : function(e){
+                        if(e.keyCode == 38 || e.keyCode == 40){
+                            return;
+                        }
+                        if(e.keyCode == 13){
+                            window.open('https://www.baidu.com/s?wd='+this.ipt,'_blank');
+                        }
+                        //请求jsonp数据
+                        var url = 'https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su';
+                        this.$http.jsonp(url,{
+                            wd : this.ipt
+                        },{
+                            jsonp : 'cb'
+                        }).then((res)=>{
+                            if(res.ok){
+                                this.arr = res.data.s;
+                            }
+                        },(res)=>{
+                            alert(res.status);
+                        })
+                    },
+                    changeDown : function(){
+                        this.now++;
+                        if(this.now >= this.arr.length){
+                            this.now = -1;
+                        }
+                        this.ipt = this.arr[this.now];
+                    },
+                    changeUp : function(){
+                        this.now--;
+                        if(this.now == -1){
+                            this.now = this.arr.length;
+                        }
+                        this.ipt = this.arr[this.now];
+                    }
+                },
+                computed : {},
+                filters : {},
+                /*watch : {
+                    ipt : function(newValue,oldValue){
+                        //新老数据
+                        console.log(newValue,oldValue);
+                        //请求jsonp数据
+                        let url = 'https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su';
+                        this.$http.jsonp(url,{
+                            wd:this.ipt
+                        },{
+                            jsonp:'cb'
+                        }).then((res)=>{
+                            //console.log(res);
+                            if(res.ok){
+                                this.arr = res.data.s;
+                            }
+                        },(res)=>{
+                            alert(res);
+                        })
+                    }
+                }*/
+            })
+        };
+        //https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd=&cb=jQuery1102036783554229471793_1498566997124&_=1498566997135
+    </script>
+</head>
+<body>
+    <div id="box">
+        <h1>百度</h1><input type="text" v-model="ipt" @keyup="get" @keyup.up="changeUp" @keyup.down="changeDown"/>
+        <ul>
+            <li v-for="(val,index) in arr" :class="{active:index==now}">
+                {{val}}
+            </li>
+        </ul>
+    </div>
+</body>
+</html>
