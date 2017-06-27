@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue</title>
+    <style type="text/css">
+        * {
+            margin:0;
+            padding:0;
+        }
+        #box {
+            margin-left:40px;
+            margin-top:100px;
+        }
+        li {
+            width:250px;
+            height:50px;
+            text-align:center;
+            line-height:50px;
+            list-style:none;
+            border:1px #000 solid;
+            float:left;
+            background:#ccc;
+        }
+    </style>
+    <script type="text/javascript" src="vue.js"></script>
+</head>
+<body>
+    <div id="box">
+        <ul>
+            <li>商品名称</li>
+            <li>单价</li>
+            <li>数量</li>
+            <li>小计</li>
+        </ul>
+        <ul v-for="item in pro_info">
+            <li>{{item.name}}</li>
+            <li>{{item.price | currency}}</li>
+            <li><input type="number" min="0" v-model="item.count"/></li>
+            <li>{{item.price * item.count | currency(3,'￥')}}</li>
+        </ul>
+        <ul>
+            <li>总计</li>
+            <li style="width:754px">{{cptSum | currency(4,'￥')}}</li>
+        </ul>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    new Vue({
+        el : '#box',
+        data : {
+            pro_info : [{name:'西红柿',price:2.5,count:2},{name:'黄瓜',price:3.5,count:3},{name:'苦瓜',price:6.3,count:5}]
+        },
+        methods : {},
+        computed : {
+            cptSum : function(){
+                var result = 0;
+                this.pro_info.forEach(function(item){
+                      result += item.count * item.price;
+                });
+                return result;
+            }
+        },
+        filters : {
+            currency : function(input,digit=2,symbol='￥'){
+                return symbol+input.toFixed(digit);
+            }
+        }
+    })
+</script>
